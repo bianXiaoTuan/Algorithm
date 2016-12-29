@@ -1,0 +1,5 @@
+.idea
+*.swap
+*.iml
+out
+*.xml
