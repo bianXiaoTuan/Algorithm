@@ -15,7 +15,6 @@
  *  with with site (1, 1) in the upper left-hand corner.
  *
  ******************************************************************************/
-
 package com.chenhuan0103.UnionFind;
 
 import java.awt.Font;

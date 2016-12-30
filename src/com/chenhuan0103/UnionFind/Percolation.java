@@ -7,35 +7,14 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
  */
 public class Percolation {
 
-    private int _size;
-    private int[][] _grid;    // 0 = closed, 1 = open
-    private int _open_sites_num;
-    private int _virtual_top_pos;
-    private int _virtual_bottom_pos;
+    private int size;
+    private int[][] grid;    // 0 = closed, 1 = open
+    private int openSitesNum;
+    private int virtualTopPos;
+    private int virtualBottomPos;
 
-    private WeightedQuickUnionUF _uf;
+    private WeightedQuickUnionUF uf;
 
-    public WeightedQuickUnionUF get_uf() {
-        return _uf;
-    }
-
-    public void validate(int row, int col) {
-        if (row < 1 || col < 1) {
-            throw new IllegalArgumentException("row or col less than 1");
-        }
-    }
-
-    /**
-     * 将grid中row和col转成union_find中index
-     *
-     * @param row {int}
-     * @param col {int}
-     * @return {int}
-     */
-    public int uf_index(int row, int col) {
-        validate(row, col);
-        return (row - 1) * _size + col;
-    }
 
     /**
      * Create n-by-n grid, with all sites blocked
@@ -47,22 +26,47 @@ public class Percolation {
             throw new IllegalArgumentException("size n less than 0");
         }
 
-        _size = n;
-        _open_sites_num = 0;
-        _virtual_top_pos = 0;
-        _virtual_bottom_pos = n * n + 1;
+        size = n;
+        openSitesNum = 0;
+        virtualTopPos = 0;
+        virtualBottomPos = n * n + 1;
 
         // Init grid
-        _grid = new int[n][n];
+        grid = new int[n][n];
         for (int i = 0; i < n; i++) {
            for (int j = 0; j < n; j++) {
-               _grid[i][j] = 0;
+               grid[i][j] = 0;
            }
         }
 
         // Init union-find, included virtul top and bottom
-        _uf = new WeightedQuickUnionUF(n * n + 2);
+        uf = new WeightedQuickUnionUF(n * n + 2);
     }
+
+    /**
+     * Check if row and col validate
+     *
+     * @param row {int}
+     * @param col {int}
+     */
+    private void validate(int row, int col) {
+        if (row < 1 || col < 1) {
+            throw new IndexOutOfBoundsException("row or col less than 1");
+        }
+    }
+
+    /**
+     * 将grid中row和col转成union_find中index
+     *
+     * @param row {int}
+     * @param col {int}
+     * @return {int}
+     */
+    private int ufIndex(int row, int col) {
+        validate(row, col);
+        return (row - 1) * size + col;
+    }
+
 
     /**
      * Open site (row, col) if it is not open already
@@ -73,44 +77,44 @@ public class Percolation {
     public void open(int row, int col) {
         validate(row, col);
 
-        if (_grid[row - 1][col - 1] == 0) {
+        if (grid[row - 1][col - 1] == 0) {
             // Set site open
-            _grid[row - 1][col - 1] = 1;
+            grid[row - 1][col - 1] = 1;
 
             // Get uf index
-            int uf_index = uf_index(row, col);
+            int ufIndex = ufIndex(row, col);
 
             // if site on top side
             if (row == 1) {
-                _uf.union(uf_index, _virtual_top_pos);
+                uf.union(ufIndex, virtualTopPos);
             }
 
             // if site on bottom side
-            if (row == _size) {
-                _uf.union(uf_index, _virtual_bottom_pos);
+            if (row == size) {
+                uf.union(ufIndex, virtualBottomPos);
             }
 
             // Union top
             if (row > 1 && isOpen(row - 1, col)) {
-                _uf.union(uf_index, uf_index(row - 1, col));
+                uf.union(ufIndex, ufIndex(row - 1, col));
             }
 
             // Union bottom
-            if (row < _size && isOpen(row + 1, col)) {
-                _uf.union(uf_index, uf_index(row + 1, col));
+            if (row < size && isOpen(row + 1, col)) {
+                uf.union(ufIndex, ufIndex(row + 1, col));
             }
 
             // Union left
             if (col > 1 && isOpen(row, col - 1)) {
-                _uf.union(uf_index, uf_index(row, col - 1));
+                uf.union(ufIndex, ufIndex(row, col - 1));
             }
 
             // Union right
-            if (col < _size && isOpen(row, col + 1)) {
-                _uf.union(uf_index, uf_index(row, col + 1));
+            if (col < size && isOpen(row, col + 1)) {
+                uf.union(ufIndex, ufIndex(row, col + 1));
             }
 
-            _open_sites_num = _open_sites_num + 1;
+            openSitesNum = openSitesNum + 1;
         }
     }
 
@@ -124,7 +128,7 @@ public class Percolation {
     public boolean isOpen(int row, int col) {
         validate(row, col);
 
-        return _grid[row - 1][col - 1] == 1;
+        return grid[row - 1][col - 1] == 1;
     }
 
     /**
@@ -137,7 +141,7 @@ public class Percolation {
     public boolean isFull(int row, int col) {
         validate(row, col);
 
-        return _uf.connected(_virtual_top_pos, uf_index(row, col));
+        return uf.connected(virtualTopPos, ufIndex(row, col));
     }
 
     /**
@@ -146,7 +150,7 @@ public class Percolation {
      * @return {int}
      */
     public int numberOfOpenSites() {
-        return _open_sites_num;
+        return openSitesNum;
     }
 
     /**
@@ -155,7 +159,7 @@ public class Percolation {
      * @return True = system percolate, False = not
      */
     public boolean percolates() {
-        return _uf.connected(_virtual_top_pos, _virtual_bottom_pos);
+        return uf.connected(virtualTopPos, virtualBottomPos);
     }
 
     public static void main(String[] args) {
