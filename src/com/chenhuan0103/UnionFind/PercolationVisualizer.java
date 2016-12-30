@@ -16,6 +16,8 @@
  *
  ******************************************************************************/
 
+package com.chenhuan0103.UnionFind;
+
 import java.awt.Font;
 
 import edu.princeton.cs.algs4.In;

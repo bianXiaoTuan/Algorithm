@@ -1,15 +1,32 @@
 package com.chenhuan0103.UnionFind;
 
+import edu.princeton.cs.algs4.WeightedQuickUnionUF;
+
 /**
  * Created by chenhuan on 2016/12/29.
  */
 public class Percolation {
+
+    private int _size;
+    private int[][] _grid;
+    private WeightedQuickUnionUF _uf;
+
     /**
      * Create n-by-n grid, with all sites blocked
      *
      * @param n {int}
      */
     public Percolation(int n) {
+        _size = n;
+
+        // Init grid
+        _grid = new int[n][n];
+        for (int i = 0; i < n; i++) {
+           for (int j = 0; j < n; j++) {
+               _grid[i][j] = 0;    // 0 = site closed
+           }
+        }
+
 
     }
 
