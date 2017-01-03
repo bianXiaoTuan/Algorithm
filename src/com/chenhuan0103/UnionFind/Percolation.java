@@ -1,5 +1,3 @@
-package com.chenhuan0103.UnionFind;
-
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 /**
@@ -50,8 +48,8 @@ public class Percolation {
      * @param col {int}
      */
     private void validate(int row, int col) {
-        if (row < 1 || col < 1) {
-            throw new IndexOutOfBoundsException("row or col less than 1");
+        if (row < 1 || col < 1 || row > size || col > size) {
+            throw new IndexOutOfBoundsException("row or col less than 1 or more than n");
         }
     }
 
@@ -140,7 +138,6 @@ public class Percolation {
      */
     public boolean isFull(int row, int col) {
         validate(row, col);
-
         return uf.connected(virtualTopPos, ufIndex(row, col));
     }
 
